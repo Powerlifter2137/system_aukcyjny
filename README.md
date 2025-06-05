@@ -1,4 +1,4 @@
-# Autorzy: Maksymilian Majek , Patryk Łoboda , Tomasz Kędziela , Michał Nowacki , Karolina Karczewska
+# Autorzy: Maksymilian Majek 51323, Patryk Łoboda 42931, Tomasz Kędziela 50018, Michał Nowacki 51331, Karolina Karczewska 53835
 
 # System Aukcyjny
 
