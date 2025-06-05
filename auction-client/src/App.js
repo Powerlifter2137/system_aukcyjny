@@ -4,6 +4,8 @@ import AuctionList from './components/AuctionList';
 import LoginForm from './components/LoginForm';
 import RegisterForm from './components/RegisterForm';
 import AuctionPage from './pages/AuctionPage';
+import './App.css';
+
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
@@ -21,7 +23,10 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <h1>System Aukcyjny</h1>
+        <h1 style={{ textAlign: 'center', marginTop: '30px', color: '#222' }}>
+        System aukcyjny :D
+        </h1>
+
 
         {token && <button onClick={handleLogout}>Wyloguj się</button>}
 

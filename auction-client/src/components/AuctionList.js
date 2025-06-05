@@ -3,6 +3,8 @@ import axios from 'axios';
 import AuctionForm from './AuctionForm';
 import BidForm from './BidForm';
 import BidsList from './BidsList';
+import '../App.css';
+
 
 const AuctionList = ({ token }) => {
   const [auctions, setAuctions] = useState([]);
