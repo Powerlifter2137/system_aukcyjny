@@ -22,7 +22,10 @@ namespace AuctionSystemAPI.Services {
                 throw new InvalidOperationException("Aukcja została zakończona");
 
             // Najwyższa obecna oferta
-            var highestBid = auction.Bids.OrderByDescending(b => b.Amount).FirstOrDefault();
+            var highestBid = auction.Bids
+                .OrderByDescending(b => (double)b.Amount) // ✔ SQLite-safe
+                .FirstOrDefault();
+
             decimal minimum = highestBid?.Amount ?? auction.StartingPrice;
 
             if (bid.Amount <= minimum)
@@ -35,12 +38,13 @@ namespace AuctionSystemAPI.Services {
             return bid;
         }
 
-            public async Task<IEnumerable<Bid>> GetBidsForAuction(int auctionId) {
+        public async Task<IEnumerable<Bid>> GetBidsForAuction(int auctionId) {
             var bids = await _context.Bids
-            .Where(b => b.AuctionId == auctionId)
-            .ToListAsync();
+                .Where(b => b.AuctionId == auctionId)
+                .OrderByDescending(b => (double)b.Amount) // ✔ SQLite-safe
+                .ToListAsync();
 
-            return bids.OrderByDescending(b => b.Amount);
+            return bids;
         }
     }
 }

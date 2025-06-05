@@ -17,8 +17,6 @@ const AuctionList = ({ token }) => {
 
   useEffect(() => {
     fetchAuctions();
-
-    // opcjonalnie: co 30 sekund automatycznie pobieraj aktualizacje
     const interval = setInterval(fetchAuctions, 30000);
     return () => clearInterval(interval);
   }, []);
@@ -49,7 +47,14 @@ const AuctionList = ({ token }) => {
       <AuctionForm onAuctionAdded={fetchAuctions} token={token} />
       <ul style={{ listStyle: 'none', padding: 0 }}>
         {auctions.map(auction => {
-          const hasEnded = auction.isClosed || (auction.endTime && new Date(auction.endTime) < new Date());
+          const now = new Date();
+          const endTime = new Date(auction.endTime);
+          const hasEnded = auction.isClosed || (auction.endTime && endTime < now);
+
+          // Oblicz najwyższą ofertę albo użyj ceny początkowej
+          const currentPrice = auction.bids?.length > 0
+            ? Math.max(...auction.bids.map(b => b.amount))
+            : auction.startingPrice;
 
           return (
             <li key={auction.id} style={{
@@ -66,27 +71,26 @@ const AuctionList = ({ token }) => {
                 <>Zakończenie licytacji: <strong>{formatDateTime(auction.endTime)}</strong><br /></>
               )}
 
-              {/* Info o zakończeniu aukcji */}
+              {/* Info o zakończeniu aukcji i zwycięzcy */}
               {hasEnded && (
                 <p style={{ color: 'gray', marginTop: '8px' }}>
                   ⏱ Aukcja zakończona.
                   {auction.winner ? (
-                  <span style={{ color: 'green' }}> Wygrał użytkownik <strong>{auction.winner.username}</strong></span>
-                ) : (
-                  <span> Brak zwycięzcy.</span>
-                )}
-
+                    <span style={{ color: 'green' }}> Wygrał użytkownik <strong>{auction.winner.username}</strong></span>
+                  ) : (
+                    <span> Brak zwycięzcy.</span>
+                  )}
                 </p>
               )}
 
-              {/* Licytacja tylko jeśli aukcja trwa */}
+              {/* Formularz składania oferty (jeśli aukcja trwa) */}
               {!hasEnded && (
                 <div style={{ marginTop: '10px' }}>
                   <h4>Złóż ofertę</h4>
                   <BidForm
                     auctionId={auction.id}
                     token={token}
-                    currentPrice={auction.currentPrice || auction.startingPrice}
+                    currentPrice={currentPrice}
                     onBidPlaced={fetchAuctions}
                   />
                 </div>

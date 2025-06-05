@@ -39,6 +39,7 @@ namespace AuctionSystemAPI.Services
         {
             var items = await _context.AuctionItems
                 .Include(a => a.Winner)
+                .Include(a => a.Bids)
                 .ToListAsync();
 
             foreach (var item in items)
@@ -85,7 +86,7 @@ namespace AuctionSystemAPI.Services
 
         public async Task<int> CloseExpiredAuctions()
         {
-            var now = DateTime.UtcNow;
+            var now = DateTime.Now; // lokalny czas
             var expired = await _context.AuctionItems
                 .Where(a => !a.IsClosed && a.EndTime < now)
                 .ToListAsync();
@@ -96,7 +97,7 @@ namespace AuctionSystemAPI.Services
 
                 var highestBid = await _context.Bids
                     .Where(b => b.AuctionId == a.Id)
-                    .OrderByDescending(b => b.Amount)
+                    .OrderByDescending(b => (double)b.Amount)
                     .FirstOrDefaultAsync();
 
                 if (highestBid != null)
@@ -112,14 +113,15 @@ namespace AuctionSystemAPI.Services
 
         private async Task CheckAndCloseAuction(AuctionItem? item)
         {
-            if (item == null || item.IsClosed || item.EndTime > DateTime.UtcNow)
+            Console.WriteLine($"[DEBUG] LOCAL teraz: {DateTime.Now:yyyy-MM-dd HH:mm:ss}, zakończenie aukcji: {item?.EndTime}");
+            if (item == null || item.IsClosed || item.EndTime > DateTime.Now)
                 return;
 
             item.IsClosed = true;
 
             var highestBid = await _context.Bids
                 .Where(b => b.AuctionId == item.Id)
-                .OrderByDescending(b => b.Amount)
+                .OrderByDescending(b => (double)b.Amount)
                 .FirstOrDefaultAsync();
 
             if (highestBid != null)
