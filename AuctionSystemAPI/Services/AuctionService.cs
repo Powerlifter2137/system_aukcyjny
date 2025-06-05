@@ -39,7 +39,6 @@ namespace AuctionSystemAPI.Services
         {
             var items = await _context.AuctionItems
                 .Include(a => a.Winner)
-                .Include(a => a.Bids)
                 .ToListAsync();
 
             foreach (var item in items)
@@ -59,7 +58,6 @@ namespace AuctionSystemAPI.Services
             existing.Category = item.Category;
             existing.StartingPrice = item.StartingPrice;
             existing.EndTime = item.EndTime;
-
             await _context.SaveChangesAsync();
             return existing;
         }
@@ -93,8 +91,22 @@ namespace AuctionSystemAPI.Services
                 .ToListAsync();
 
             foreach (var a in expired)
-                await CheckAndCloseAuction(a);
+            {
+                a.IsClosed = true;
 
+                var highestBid = await _context.Bids
+                    .Where(b => b.AuctionId == a.Id)
+                    .OrderByDescending(b => b.Amount)
+                    .FirstOrDefaultAsync();
+
+                if (highestBid != null)
+                {
+                    a.WinnerId = highestBid.BidderId;
+                    a.Winner = await _context.Users.FindAsync(highestBid.BidderId);
+                }
+            }
+
+            await _context.SaveChangesAsync();
             return expired.Count;
         }
 
@@ -113,6 +125,7 @@ namespace AuctionSystemAPI.Services
             if (highestBid != null)
             {
                 item.WinnerId = highestBid.BidderId;
+                item.Winner = await _context.Users.FindAsync(highestBid.BidderId);
             }
 
             await _context.SaveChangesAsync();

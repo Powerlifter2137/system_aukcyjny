@@ -157,3 +157,4 @@ D:\Projekt REST2\system_aukcyjny\AuctionSystemAPI\obj\Debug\net9.0\refint\Auctio
 D:\Projekt REST2\system_aukcyjny\AuctionSystemAPI\obj\Debug\net9.0\AuctionSystemAPI.pdb
 D:\Projekt REST2\system_aukcyjny\AuctionSystemAPI\obj\Debug\net9.0\AuctionSystemAPI.genruntimeconfig.cache
 D:\Projekt REST2\system_aukcyjny\AuctionSystemAPI\obj\Debug\net9.0\ref\AuctionSystemAPI.dll
+D:\Projekt REST2\system_aukcyjny\AuctionSystemAPI\obj\Debug\net9.0\AuctionSystemAPI.sourcelink.json
